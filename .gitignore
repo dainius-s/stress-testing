@@ -1,0 +1,12 @@
+# Ignore all .env files
+.env
+environments/.env.*
+
+# Ignore node_modules
+node_modules/
+
+# Ignore test results
+results/
+
+# But don't ignore example .env files
+!environments/.env.*.example

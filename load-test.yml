@@ -1,0 +1,22 @@
+config:
+  target: "{{ $processEnvironment.API_URL }}"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+  processor: "./load-env.js"
+
+scenarios:
+  - name: "API flow"
+    flow:
+      - post:
+          url: "/login"
+          json:
+            username: "{{ $processEnvironment.API_USERNAME }}"
+            password: "{{ $processEnvironment.API_PASSWORD }}"
+          capture:
+            json: "$.token"
+            as: "token"
+      - get:
+          url: "/users"
+          headers:
+            Authorization: "Bearer {{ token }}"

@@ -1,0 +1,20 @@
+{
+  "name": "stress-testing",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "node ensure-results-dir.js",
+    "test:dev": "artillery run --dotenv environments/.env.dev --output ./results/dev-result.json load-test.yml",
+    "test:staging": "artillery run --dotenv environments/.env.staging --output ./results/staging-result.json load-test.yml",
+    "test:prod": "artillery run --dotenv environments/.env.prod --output ./results/prod-result.json load-test.yml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "artillery": "^2.0.17",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5"
+  }
+}
