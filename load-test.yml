@@ -1,22 +1,42 @@
 config:
   target: "{{ $processEnvironment.API_URL }}"
   phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm up"
     - duration: 60
       arrivalRate: 5
+      rampTo: 50
+      name: "Ramp up load"
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load"
   processor: "./load-env.js"
 
 scenarios:
-  - name: "API flow"
+  - name: "Login & Search"
+#    beforeRequest: "https://github.com/artilleryio/artillery/blob/main/examples/refresh-auth-token/refresh.yml"
     flow:
       - post:
           url: "/login"
           json:
-            username: "{{ $processEnvironment.API_USERNAME }}"
+            email: "{{ $processEnvironment.API_USERNAME }}"
             password: "{{ $processEnvironment.API_PASSWORD }}"
           capture:
             json: "$.token"
             as: "token"
       - get:
-          url: "/users"
+          url: "/users/profile"
           headers:
             Authorization: "Bearer {{ token }}"
+      - think: 1
+      - get:
+          url: "/categories"
+      - get:
+          url: "/genders"
+      - get:
+          url: "/ethnicities"
+      - get:
+          url: "/religions"
+      - get:
+          url: "/services/public"
