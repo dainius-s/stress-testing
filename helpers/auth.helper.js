@@ -1,4 +1,3 @@
-require('dotenv').config();
 const axios = require('axios');
 
 const TOKEN_REFRESH_INTERVAL = 1000 * 60 * 55; // 55 minutes (assuming 1-hour token lifetime)
@@ -28,7 +27,7 @@ async function refreshTokenIfNeeded(requestParams, context, ee, next) {
 
 async function fetchToken(username, password) {
   try {
-    const response = await axios.post(`${process.env.API_URL}/login`, {
+    const response = await axios.post(`${process.env.AUTH_URL}`, {
       email: username,
       password: password
     });
