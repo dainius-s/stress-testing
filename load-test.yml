@@ -11,11 +11,10 @@ config:
     - duration: 120
       arrivalRate: 50
       name: "Sustained load"
-  processor: "./load-env.js"
+  processor: "./main-processor.js"
 
 scenarios:
-  - name: "Login & Search"
-#    beforeRequest: "https://github.com/artilleryio/artillery/blob/main/examples/refresh-auth-token/refresh.yml"
+  - name: "LOGIN_AND_SEARCH"
     flow:
       - post:
           url: "/login"
@@ -24,12 +23,16 @@ scenarios:
             password: "{{ $processEnvironment.API_PASSWORD }}"
           capture:
             json: "$.token"
-            as: "token"
+            as: "authToken"
       - get:
           url: "/users/profile"
           headers:
-            Authorization: "Bearer {{ token }}"
+            Authorization: "Bearer {{ authToken }}"
       - think: 1
+      - get:
+          url: "/services/public"
+  - name: "LOAD_FILTERS_AND_SEARCH"
+    flow:
       - get:
           url: "/categories"
       - get:
@@ -38,5 +41,27 @@ scenarios:
           url: "/ethnicities"
       - get:
           url: "/religions"
+      - think: 1
       - get:
           url: "/services/public"
+#  - name: "UPDATE_USERS"
+#    beforeScenario: refreshTokenIfNeeded
+#    flow:
+#      - get:
+#          url: "/users"
+#          headers:
+#            Authorization: "Bearer {{ authToken }}"
+#          capture:
+#            json: "$.users"
+#            as: "users"
+#      - loop:
+#          foreach: "users"
+#          do:
+#            - put:
+#                url: "/users/{{ $loopElement.id }}"
+#                headers:
+#                  Authorization: "Bearer {{ authToken }}"
+#                json:
+#                  "{{ $loopElement }}"
+#                  merge:
+#                    active: false

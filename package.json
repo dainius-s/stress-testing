@@ -12,9 +12,10 @@
   "author": "",
   "license": "MIT",
   "description": "",
-  "devDependencies": {
+  "dependencies": {
     "artillery": "^2.0.17",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "axios": "^1.7.2"
   }
 }
