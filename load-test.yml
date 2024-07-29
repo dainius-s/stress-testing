@@ -5,7 +5,7 @@ config:
       arrivalRate: 5
       name: "Warm up"
     - duration: 60
-      arrivalRate: 5
+      arrivalRate: 10
       rampTo: 50
       name: "Ramp up load"
     - duration: 120
@@ -14,7 +14,7 @@ config:
   processor: "./main-processor.js"
 
 scenarios:
-  - name: "LOGIN_AND_SEARCH"
+  - name: "LOGIN"
     flow:
       - post:
           url: "/login"
@@ -28,10 +28,9 @@ scenarios:
           url: "/users/profile"
           headers:
             Authorization: "Bearer {{ authToken }}"
-      - think: 1
-      - get:
-          url: "/services/public"
+
   - name: "LOAD_FILTERS_AND_SEARCH"
+    beforeScenario: refreshTokenIfNeeded
     flow:
       - get:
           url: "/categories"
@@ -44,24 +43,24 @@ scenarios:
       - think: 1
       - get:
           url: "/services/public"
-#  - name: "UPDATE_USERS"
-#    beforeScenario: refreshTokenIfNeeded
-#    flow:
-#      - get:
-#          url: "/users"
-#          headers:
-#            Authorization: "Bearer {{ authToken }}"
-#          capture:
-#            json: "$.users"
-#            as: "users"
-#      - loop:
-#          foreach: "users"
-#          do:
-#            - put:
-#                url: "/users/{{ $loopElement.id }}"
-#                headers:
-#                  Authorization: "Bearer {{ authToken }}"
-#                json:
-#                  "{{ $loopElement }}"
-#                  merge:
-#                    active: false
+
+  - name: "UPDATE_USERS"
+    flow:
+      - post:
+          url: "/login"
+          json:
+            email: "{{ $processEnvironment.API_USERNAME }}"
+            password: "{{ $processEnvironment.API_PASSWORD }}"
+          capture:
+            json: "$.token"
+            as: "authToken"
+      - get:
+          url: "/users"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          capture:
+            json: "$.data"
+            as: "users"
+            strict: false
+#      - log: "users: {{ users }}"
+      - function: "updateUsers"

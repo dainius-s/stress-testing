@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const TOKEN_REFRESH_INTERVAL = 1000 * 60 * 55; // 55 minutes (assuming 1-hour token lifetime)
 
-async function refreshTokenIfNeeded(requestParams, context, ee, next) {
+async function refreshTokenIfNeeded(requestParams, context, events) {
   // Initialize context.vars if not already done
   context.vars = context.vars || {};
   context.vars.tokenExpiryTime = context.vars.tokenExpiryTime || 0;
@@ -19,10 +19,9 @@ async function refreshTokenIfNeeded(requestParams, context, ee, next) {
 //      console.log('  new token:', context.vars.authToken);
     } catch (error) {
       console.error('Error fetching token:', error);
-      return next(error); // Pass the error to Artillery
+      throw error; // Rethrow the error to be handled by Artillery
     }
   }
-  return next();
 }
 
 async function fetchToken(username, password) {
